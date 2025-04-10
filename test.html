@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Turnaj Ping Pong</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SimpleKeyboard CSS -->
+  <link rel="stylesheet" href="index.css">
+  <style>
+    .simple-keyboard {
+    font-size: 2.2rem; /* zvětší písmo */
+        --simple-keyboard-button-height: 80px;
+        --simple-keyboard-button-width: 10%; /* zvětší šířku tlačítek */
+        --simple-keyboard-button-background: #444;
+        --simple-keyboard-button-color: #fff;
+        --simple-keyboard-button-hover-background: #666;
+        --simple-keyboard-bg: #222;
+        --simple-keyboard-shadow: none;
+    }
+
+    .simple-keyboard .hg-button {
+        margin: 6px; /* mezery mezi tlačítky */
+        border-radius: 12px;
+        font-weight: bold;
+    }
+
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #222;
+      color: white;
+    }
+
+    .container {
+      padding: 2rem;
+      text-align: center;
+    }
+
+    input {
+      font-size: 2rem;
+      padding: 1rem;
+      width: 90%;
+      max-width: 600px;
+    }
+
+    .simple-keyboard {
+      max-width: 600px;
+      margin: 2rem auto;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Ping Pong Turnaj</h1>
+  <input id="input" placeholder="Zadej jméno hráče" />
+  <div class="simple-keyboard"></div>
+</div>
+
+<!-- SimpleKeyboard JS -->
+<script src="index.js"></script>
+<script>
+  const myKeyboard = new SimpleKeyboard.default({
+    onChange: input => onChange(input),
+    onKeyPress: button => onKeyPress(button),
+  });
+
+  const inputField = document.getElementById("input");
+
+  function onChange(input) {
+    inputField.value = input;
+  }
+
+  function onKeyPress(button) {
+    if (button === "{enter}") {
+      console.log("Enter pressed");
+    }
+  }
+
+  inputField.addEventListener("input", event => {
+    myKeyboard.setInput(event.target.value);
+  });
+
+  inputField.addEventListener("focus", () => {
+    myKeyboard.setInput(inputField.value);
+  });
+</script>
+
+</body>
+</html>

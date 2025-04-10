@@ -1,0 +1,173 @@
+<button onclick="toggleKeyboard()">Zobraz klávesnici</button>
+<input type="text" id="inputField" onclick="toggleNumpad()" style="font-size: 18px; padding: 10px; margin-top: 20px;" />
+<input type="text" id="inputField" onclick="toggleKeyboard()" style="font-size: 18px; padding: 100px; margin-top: 20px;" />
+<div id="numpad" style="display:none; background-color: #2c2c2c; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+  <div class="row">
+    <button class="key" onclick="appendToInput('7')">7</button>
+    <button class="key" onclick="appendToInput('8')">8</button>
+    <button class="key" onclick="appendToInput('9')">9</button>
+  </div>
+  <div class="row">
+    <button class="key" onclick="appendToInput('4')">4</button>
+    <button class="key" onclick="appendToInput('5')">5</button>
+    <button class="key" onclick="appendToInput('6')">6</button>
+  </div>
+  <div class="row">
+    <button class="key" onclick="appendToInput('1')">1</button>
+    <button class="key" onclick="appendToInput('2')">2</button>
+    <button class="key" onclick="appendToInput('3')">3</button>
+  </div>
+  <div class="row">
+
+    <button class="key" onclick="appendToInput('0')">0</button>
+
+  </div>
+  <div class="row">
+    <button class="key" onclick="closeKeyboard()">Zavřít</button>
+  </div>
+</div>
+
+<div id="keyboard" style="display:none; background-color: #2c2c2c; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+    <div class="row">
+      <button class="key" onclick="appendToInput('Ě')">Ě</button>
+      <button class="key" onclick="appendToInput('Š')">Š</button>
+      <button class="key" onclick="appendToInput('Č')">Č</button>
+      <button class="key" onclick="appendToInput('Ř')">Ř</button>
+      <button class="key" onclick="appendToInput('Ž')">Ž</button>
+      <button class="key" onclick="appendToInput('Ý')">Ý</button>
+      <button class="key" onclick="appendToInput('Á')">Á</button>
+      <button class="key" onclick="appendToInput('Í')">Í</button>
+      <button class="key" onclick="appendToInput('É')">É</button>
+      <button class="key" onclick="appendToInput('Ň')">Ň</button>
+
+    </div>
+    <div class="row">
+        <button class="key" onclick="appendToInput('Q')">Q</button>
+        <button class="key" onclick="appendToInput('W')">W</button>
+        <button class="key" onclick="appendToInput('E')">E</button>
+        <button class="key" onclick="appendToInput('R')">R</button>
+        <button class="key" onclick="appendToInput('T')">T</button>
+        <button class="key" onclick="appendToInput('Z')">Z</button>
+        <button class="key" onclick="appendToInput('U')">U</button>
+        <button class="key" onclick="appendToInput('I')">I</button>
+        <button class="key" onclick="appendToInput('O')">O</button>
+        <button class="key" onclick="appendToInput('P')">P</button>
+      </div>
+    <div class="row">
+      <button class="key" onclick="appendToInput('A')">A</button>
+      <button class="key" onclick="appendToInput('S')">S</button>
+      <button class="key" onclick="appendToInput('D')">D</button>
+      <button class="key" onclick="appendToInput('F')">F</button>
+      <button class="key" onclick="appendToInput('G')">G</button>
+      <button class="key" onclick="appendToInput('H')">H</button>
+      <button class="key" onclick="appendToInput('J')">J</button>
+      <button class="key" onclick="appendToInput('K')">K</button>
+      <button class="key" onclick="appendToInput('L')">L</button>
+    </div>
+    <div class="row">
+      <button class="key" onclick="appendToInput('Y')">Y</button>
+      <button class="key" onclick="appendToInput('X')">X</button>
+      <button class="key" onclick="appendToInput('C')">C</button>
+      <button class="key" onclick="appendToInput('V')">V</button>
+      <button class="key" onclick="appendToInput('B')">B</button>
+      <button class="key" onclick="appendToInput('N')">N</button>
+      <button class="key" onclick="appendToInput('M')">M</button>
+      <button class="key" onclick="deleteLastCharacter()">&#9003;</button> <!-- Backspace znak -->
+    </div>
+
+    <div class="row">
+      <button class="key" onclick="closeKeyboard()">Zavřít</button>
+    </div>
+  </div>
+
+<script>
+function toggleNumpad() {
+  var keyboard = document.getElementById('numpad');
+  keyboard.style.display = (keyboard.style.display === 'none') ? 'block' : 'none';
+}
+
+function appendToInput(value) {
+  var inputField = document.getElementById('inputField');
+  inputField.value += value;
+}
+
+function deleteLastCharacter() {
+    var inputField = document.getElementById('inputField');
+    inputField.value = inputField.value.slice(0, -1); // Odstraní poslední znak
+  }
+
+function closeNumpad() {
+  var keyboard = document.getElementById('numpad');
+  keyboard.style.display = 'none';
+}
+
+function toggleKeyboard() {
+    var keyboard = document.getElementById('keyboard');
+    keyboard.style.display = (keyboard.style.display === 'none') ? 'block' : 'none';
+  }
+  
+  
+  function closeKeyboard() {
+    var keyboard = document.getElementById('keyboard');
+    keyboard.style.display = 'none';
+  }
+
+</script>
+
+<style>
+/* Styl pro klávesnici */
+#numpad {
+  display: none;
+  background-color: #2c2c2c;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  max-width: 320px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Styl pro tlačítka */
+.key {
+  background-color: #444;
+  color: #fff;
+  font-size: 40px;
+  padding: 30px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.key:hover {
+  background-color: #666;
+  transform: scale(1.1);
+}
+
+.key:active {
+  background-color: #888;
+  transform: scale(1);
+}
+
+.row {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 5px;
+}
+
+#inputField {
+  font-size: 18px;
+  padding: 10px;
+  margin-top: 20px;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+#inputField:focus {
+  outline: none;
+}
+</style>

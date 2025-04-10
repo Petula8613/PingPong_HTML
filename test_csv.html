@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Ping-Pong Turnaj</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Styly zůstávají stejné */
+  </style>
+</head>
+<body>
+
+  <div class="menu">
+    <button class="btn" onclick="zobraz('registrace')">Registrace hráče</button>
+    <button class="btn" onclick="zobraz('skupinaA')">Zápas - Skupina Dospělí</button>
+    <button class="btn" onclick="zobraz('skupinaB')">Zápas - Skupina Děti</button>
+  </div>
+
+  <!-- Sekce: Registrace -->
+  <div id="registrace" class="section">
+    <h2>Registrace hráče</h2>
+    <div class="form-group">
+      <label>Jméno:</label>
+      <input type="text" id="jmeno">
+    </div>
+    <div class="form-group">
+      <label>Příjmení:</label>
+      <input type="text" id="prijmeni">
+    </div>
+    <div class="form-group">
+      <label>Skupina:</label>
+      <select id="skupina">
+        <option>Dospělí</option>
+        <option>Děti</option>
+      </select>
+    </div>
+    <button class="btn" onclick="ulozHrace()">Uložit hráče</button>
+    <button class="btn back-btn" onclick="zpet()">Zpět</button>
+  </div>
+
+  <!-- Sekce: Zápasy -->
+  <div id="skupinaA" class="section">
+    <h2>Zápas - Skupina Dospělí</h2>
+    <div class="form-group">
+      <label>Hráč 1:</label>
+      <select id="hrac1A"></select>
+    </div>
+    <div class="form-group">
+      <label>Hráč 2:</label>
+      <select id="hrac2A"></select>
+    </div>
+    <div class="form-group score-inputs">
+      <input type="number" id="skore1A" placeholder="Skóre hráče 1">
+      <input type="number" id="skore2A" placeholder="Skóre hráče 2">
+    </div>
+    <button class="btn" onclick="ulozZapas('Dospělí')">Uložit zápas</button>
+    <button class="btn back-btn" onclick="zpet()">Zpět</button>
+  </div>
+
+  <div id="skupinaB" class="section">
+    <h2>Zápas - Skupina Děti</h2>
+    <div class="form-group">
+      <label>Hráč 1:</label>
+      <select id="hrac1B"></select>
+    </div>
+    <div class="form-group">
+      <label>Hráč 2:</label>
+      <select id="hrac2B"></select>
+    </div>
+    <div class="form-group score-inputs">
+      <input type="number" id="skore1B" placeholder="Skóre hráče 1">
+      <input type="number" id="skore2B" placeholder="Skóre hráče 2">
+    </div>
+    <button class="btn" onclick="ulozZapas('Děti')">Uložit zápas</button>
+    <button class="btn back-btn" onclick="zpet()">Zpět</button>
+  </div>
+
+  <h1>Ping-pong Turnaj</h1>  
+  <button class="btn1" id="btnVysledky" onclick="toggleVysledky()">Zobrazit výsledky</button>
+
+  <div id="vysledky" style="display: none; padding: 2rem;">
+    <h2>Výsledky Skupiny Dospělí</h2>
+    <table id="tabulkaA" class="vysledky" border="1"></table>
+  
+    <h2>Výsledky Skupiny Děti</h2>
+    <table id="tabulkaB" class="vysledky" border="1"></table>
+
+    <button class="btn" onclick="exportVysledky()">Exportovat výsledky do CSV</button>
+    <button class="btn" onclick="zalozNaUSB()">Zálohovat na USB</button>
+  </div>
+
+  <script>
+    // Funkce pro export do CSV
+    function exportVysledky() {
+      const zapasy = JSON.parse(localStorage.getItem('zapasy') || '[]');
+      let csvContent = "Hráč 1;Hráč 2;Skóre 1;Skóre 2;Skupina\n";
+
+      zapasy.forEach(zapas => {
+        csvContent += `${zapas.h1};${zapas.h2};${zapas.s1};${zapas.s2};${zapas.skupina}\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'vysledky_turnaje.csv';
+      link.click();
+    }
+
+    // Funkce pro zálohování na USB
+    function zalozNaUSB() {
+      // Tato funkce je pouze ukázková, zálohování na USB závisí na přístupu k zařízení
+      // Uživatel musí zajistit, že USB je připojeno a dostupné
+      alert("Zálohování na USB je funkce závislá na nastavení systému. Proveďte zálohu ručně.");
+    }
+
+    // Ostatní funkce zůstávají stejné (viz předchozí kód)
+  </script>
+
+</body>
+</html>

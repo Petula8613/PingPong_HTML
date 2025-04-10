@@ -127,8 +127,8 @@ html, body {
 
   <div class="menu">
     <button class="btn" onclick="zobraz('registrace')">Registrace hráče</button>
-    <button class="btn" onclick="zobraz('skupinaA')">Zápas - Skupina Dospělí</button>
-    <button class="btn" onclick="zobraz('skupinaB')">Zápas - Skupina Děti</button>
+    <button class="btn" onclick="zobraz('Dospělí')">Zápas - Skupina Dospělí</button>
+    <button class="btn" onclick="zobraz('Děti')">Zápas - Skupina Děti</button>
   </div>
 
   <!-- Sekce: Registrace -->
@@ -154,7 +154,7 @@ html, body {
   </div>
 
   <!-- Sekce: Zápasy -->
-  <div id="skupinaA" class="section">
+  <div id="Dospělí" class="section">
     <h2>Zápas - Skupina Dospělí</h2>
     <div class="form-group">
       <label>Hráč 1:</label>
@@ -172,7 +172,7 @@ html, body {
     <button class="btn back-btn" onclick="zpet()">Zpět</button>
   </div>
 
-  <div id="skupinaB" class="section">
+  <div id="Děti" class="section">
     <h2>Zápas - Skupina Děti</h2>
     <div class="form-group">
       <label>Hráč 1:</label>
@@ -202,107 +202,105 @@ html, body {
     <table id="tabulkaB" class="vysledky" border="1"></table>
   </div>
   <script>
-function toggleVysledky() {
-  const vysledkyDiv = document.getElementById("vysledky");
-  const tlacitko = document.getElementById("btnVysledky");
+    function toggleVysledky() {
+      const vysledkyDiv = document.getElementById("vysledky");
+      const tlacitko = document.getElementById("btnVysledky");
 
-  if (vysledkyDiv.style.display === "block") {
-    vysledkyDiv.style.display = "none";
-    tlacitko.textContent = "Zobrazit výsledky";
-  } else {
-    zobrazVysledky();
-    vysledkyDiv.style.display = "block";
-    tlacitko.textContent = "Skrýt výsledky";
-  }
-}
+      if (vysledkyDiv.style.display === "block") {
+        vysledkyDiv.style.display = "none";
+        tlacitko.textContent = "Zobrazit výsledky";
+      } else {
+        zobrazVysledky();
+        vysledkyDiv.style.display = "block";
+        tlacitko.textContent = "Skrýt výsledky";
+      }
+    }
 
-function zobrazVysledky() {
-  const zapasy = JSON.parse(localStorage.getItem('zapasy') || '[]');
-  const statistikyA = {};
-  const statistikyB = {};
+    function zobrazVysledky() {
+      const zapasy = JSON.parse(localStorage.getItem('zapasy') || '[]');
+      const statistikyA = {};
+      const statistikyB = {};
 
-  for (const z of zapasy) {
-    const [cele1, cele2] = [z.h1, z.h2];
-    const s1 = parseInt(z.s1) || 0;
-    const s2 = parseInt(z.s2) || 0;
+      for (const z of zapasy) {
+        const [cele1, cele2] = [z.h1, z.h2];
+        const s1 = parseInt(z.s1) || 0;
+        const s2 = parseInt(z.s2) || 0;
 
-    const data1 = { jmeno: cele1, vyhry: 0, prohry: 0, body: s1 };
-    const data2 = { jmeno: cele2, vyhry: 0, prohry: 0, body: s2 };
+        const data1 = { jmeno: cele1, vyhry: 0, prohry: 0, body: s1 };
+        const data2 = { jmeno: cele2, vyhry: 0, prohry: 0, body: s2 };
 
-    if (s1 > s2) { data1.vyhry++; data2.prohry++; }
-    else if (s2 > s1) { data2.vyhry++; data1.prohry++; }
+        if (s1 > s2) { data1.vyhry++; data2.prohry++; }
+        else if (s2 > s1) { data2.vyhry++; data1.prohry++; }
 
-    const stat = z.skupina === "A" ? statistikyA : statistikyB;
-    stat[cele1] = merge(stat[cele1], data1);
-    stat[cele2] = merge(stat[cele2], data2);
-  }
+        const stat = z.skupina === "A" ? statistikyA : statistikyB;
+        stat[cele1] = merge(stat[cele1], data1);
+        stat[cele2] = merge(stat[cele2], data2);
+      }
 
-  vykresliTabulku("tabulkaA", statistikyA);
-  vykresliTabulku("tabulkaB", statistikyB);
-}
-
-
-function merge(puvodni, nove) {
-  if (!puvodni) return { ...nove };
-  return {
-    jmeno: nove.jmeno,
-    vyhry: puvodni.vyhry + nove.vyhry,
-    prohry: puvodni.prohry + nove.prohry,
-    body: puvodni.body + nove.body
-  };
-}
-
-function vykresliTabulku(id, data) {
-  const tbody = Object.values(data)
-    .sort((a, b) => b.vyhry - a.vyhry || b.body - a.body); // seřazení podle výher, pak bodů
-
-  let html = "<tr><th>Pořadí</th><th>Hráč</th><th>Výhry</th><th>Prohry</th><th>Body</th></tr>";
-  tbody.forEach((hrac, index) => {
-    html += `<tr>
-      <td>${index + 1}</td>
-      <td>${hrac.jmeno}</td>
-      <td>${hrac.vyhry}</td>
-      <td>${hrac.prohry}</td>
-      <td>${hrac.body}</td>
-    </tr>`;
-  });
-  document.getElementById(id).innerHTML = html;
-}
+      vykresliTabulku("tabulkaA", statistikyA);
+      vykresliTabulku("tabulkaB", statistikyB);
+    }
 
 
-function merge(puvodni, nove) {
-  if (!puvodni) return { ...nove };
-  return {
-    jmeno: nove.jmeno,
-    vyhry: puvodni.vyhry + nove.vyhry,
-    prohry: puvodni.prohry + nove.prohry,
-    body: puvodni.body + nove.body
-  };
-}
+    function merge(puvodni, nove) {
+      if (!puvodni) return { ...nove };
+      return {
+        jmeno: nove.jmeno,
+        vyhry: puvodni.vyhry + nove.vyhry,
+        prohry: puvodni.prohry + nove.prohry,
+        body: puvodni.body + nove.body
+      };
+    }
 
-function vykresliTabulku(id, data) {
-  const tbody = Object.values(data)
-    .sort((a, b) => b.vyhry - a.vyhry || b.body - a.body); // seřazení podle výher, pak bodů
+    function vykresliTabulku(id, data) {
+      const tbody = Object.values(data)
+        .sort((a, b) => b.vyhry - a.vyhry || b.body - a.body); // seřazení podle výher, pak bodů
 
-  let html = "<tr><th>Pořadí</th><th>Hráč</th><th>Výhry</th><th>Prohry</th><th>Body</th></tr>";
-  tbody.forEach((hrac, index) => {
-    html += `<tr>
-      <td>${index + 1}</td>
-      <td>${hrac.jmeno}</td>
-      <td>${hrac.vyhry}</td>
-      <td>${hrac.prohry}</td>
-      <td>${hrac.body}</td>
-    </tr>`;
-  });
-  document.getElementById(id).innerHTML = html;
-}
-</script>
+      let html = "<tr><th>Pořadí</th><th>Hráč</th><th>Výhry</th><th>Prohry</th><th>Body</th></tr>";
+      tbody.forEach((hrac, index) => {
+        html += `<tr>
+          <td>${index + 1}</td>
+          <td>${hrac.jmeno}</td>
+          <td>${hrac.vyhry}</td>
+          <td>${hrac.prohry}</td>
+          <td>${hrac.body}</td>
+        </tr>`;
+      });
+      document.getElementById(id).innerHTML = html;
+    }
 
-  <script>
+
+    function merge(puvodni, nove) {
+      if (!puvodni) return { ...nove };
+      return {
+        jmeno: nove.jmeno,
+        vyhry: puvodni.vyhry + nove.vyhry,
+        prohry: puvodni.prohry + nove.prohry,
+        body: puvodni.body + nove.body
+      };
+    }
+
+    function vykresliTabulku(id, data) {
+      const tbody = Object.values(data)
+        .sort((a, b) => b.vyhry - a.vyhry || b.body - a.body); // seřazení podle výher, pak bodů
+
+      let html = "<tr><th>Pořadí</th><th>Hráč</th><th>Výhry</th><th>Prohry</th><th>Body</th></tr>";
+      tbody.forEach((hrac, index) => {
+        html += `<tr>
+          <td>${index + 1}</td>
+          <td>${hrac.jmeno}</td>
+          <td>${hrac.vyhry}</td>
+          <td>${hrac.prohry}</td>
+          <td>${hrac.body}</td>
+        </tr>`;
+      });
+      document.getElementById(id).innerHTML = html;
+    }
+
     function zobraz(id) {
       document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
       document.getElementById(id).style.display = 'flex';
-      if (id === 'skupinaA' || id === 'skupinaB') naplnCombo(id.slice(-1));
+      if (id === 'Dospělí' || id === 'Děti') naplnCombo(id.slice(-1));
     }
 
     function zpet() {
@@ -324,17 +322,33 @@ function vykresliTabulku(id, data) {
     }
 
     function naplnCombo(skupina) {
+      // Get the players from localStorage and filter by the selected group (A or B)
       const hraci = JSON.parse(localStorage.getItem('hraci') || '[]').filter(h => h.skupina === skupina);
+
+      // Get the ComboBoxes for player 1 and player 2
       const combo1 = document.getElementById(`hrac1${skupina}`);
       const combo2 = document.getElementById(`hrac2${skupina}`);
+
+      // Clear existing options in both ComboBoxes
       combo1.innerHTML = '';
       combo2.innerHTML = '';
-      hraci.forEach(h => {
-        const option = new Option(`${h.jmeno} ${h.prijmeni}`, `${h.jmeno} ${h.prijmeni}`);
-        combo1.appendChild(option.cloneNode(true));
-        combo2.appendChild(option.cloneNode(true));
-      });
+
+      // Add a default "Select" option to both ComboBoxes
+      combo1.appendChild(new Option("Vyber hráče", ""));
+      combo2.appendChild(new Option("Vyber hráče", ""));
+
+      // If there are players in the selected group, populate the ComboBoxes
+      if (hraci.length > 0) {
+        hraci.forEach(h => {
+          const option = new Option(`${h.jmeno} ${h.prijmeni}`, `${h.jmeno} ${h.prijmeni}`);
+          combo1.appendChild(option.cloneNode(true));
+          combo2.appendChild(option.cloneNode(true));
+        });
+      } else {
+        alert(`V skupině ${skupina} nejsou žádní hráči.`);
+      }
     }
+
 
     function ulozZapas(skupina) {
       const h1 = document.getElementById(`hrac1${skupina}`).value;

@@ -180,6 +180,7 @@
       background: linear-gradient(to right, #f8f9fa, #e9ecef);
       font-family: sans-serif;
       border: none;
+      opacity: 0.8;
     }
   
     .turnaj-tabulka th, .turnaj-tabulka td {
@@ -191,14 +192,17 @@
     .turnaj-tabulka th {
       background-color: #343a40;
       color: rgb(190, 177, 177);
+
     }
   
     .turnaj-tabulka tr:nth-child(even) {
       background-color: rgb(190, 177, 177);
+
     }
   
     .turnaj-tabulka tr:hover {
       background-color: #ddd;
+
     }
   </style>
 
@@ -321,6 +325,33 @@
     <table id="tabulkaB" class="turnaj-tabulka" border="0"></table>
   </div>
 
+  <!-- ************************************************************************************ -->
+  <h2>Statistiky hráčů – Dospělí</h2>
+  <table id="statistikyDospelem" border="1" class="turnaj-tabulka" style="border-collapse: collapse; width: 50%;">
+    <thead>
+      <tr>
+        <th>Hráč</th>
+        <th>Odehrané zápasy</th>
+        <th>Zbývající zápasy</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table> 
+
+
+  <h2>Statistiky hráčů – Děti</h2>
+  <table id="statistikyDeti" border="1" class="turnaj-tabulka" style="border-collapse: collapse; width: 50%;">
+    <thead>
+      <tr>
+        <th>Hráč</th>
+        <th>Odehrané zápasy</th>
+        <th>Zbývající zápasy</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <!-- ************************************************************************************ -->
+
   <div id="zpravaUlozeno" style="
   display: none;
   position: fixed;
@@ -363,6 +394,9 @@
       document.getElementById('prijmeni').value = '';
       naplnCombo('Dospělí');
       naplnCombo('Děti');
+      const hrac = getHraceFromLocalStorage();  // Načti hráče z localStorage
+      zobrazStatistiky(hrac, 'Děti', 'statistikyDeti');
+      zobrazStatistiky(hrac, 'Dospělí', 'statistikyDospelem');
       zobrazZpravu('Hráč uložen!');
     }
   
@@ -392,7 +426,7 @@
       }
 
       hraci.filter(h => h.skupina === skupina).forEach(h => {
-        const celeJmeno = h.jmeno + ' ' + h.prijmeni;
+        const celeJmeno = h.prijmeni + ' ' + h.jmeno;
         let opt1 = document.createElement('option');
         opt1.textContent = celeJmeno;
         combo1.appendChild(opt1);
@@ -422,6 +456,7 @@
       const s2 = s2Input.value;
       const s3 = s3Input.value;
       const s4 = s4Input.value;
+      let pocet = 0;	
     
       if (!h1 || !h2 || h1 === h2) return zobrazZpravu('Zvolte dva různé hráče!',true);//alert('');
       if (s1 === '' || s2 === '') return zobrazZpravu('Zadejte skóre prvního zápasu!',true);//alert('Zadejte skóre');
@@ -430,10 +465,14 @@
       let zapasy = JSON.parse(localStorage.getItem('zapasy') || '[]');
       zapasy.push({ h1, h2, s1, s2, s3, s4, skupina: id1 });
       localStorage.setItem('zapasy', JSON.stringify(zapasy));
-      if(h1 === 'A') {
-      p1 = s1 + s3 + 1;
+
       let pocetZapasu = JSON.parse(localStorage.getItem('pocetZapasu') || '[]');
-      pocetZapasu.push({ h1, h2,p1, skupina: id1 });
+      // Hledáme zápas podle hráčů a skupiny
+      let zapas = pocetZapasu.find(z => z.jmeno === h1 || z.jmeno === h2 && z.skupina === id1);
+      pocet = zapas.p1 + 1;
+      pocetZapasu.push({ jmeno, pocet, skupina: id1 });
+
+      // Uložíme zpět do localStorage
       localStorage.setItem('pocetZapasu', JSON.stringify(pocetZapasu));
       // Reset ComboBoxů a skóre
       h1Select.value = '';
@@ -444,6 +483,9 @@
       s4Input.value = '';
         // Zobraz info
       zobrazZpravu('Zápas uložen!');
+      const hraci = getHraceFromLocalStorage();  // Načti hráče z localStorage
+      zobrazStatistiky(hraci, 'Děti', 'statistikyDeti');
+      zobrazStatistiky(hraci, 'Dospělí', 'statistikyDospelem');
     }
 
     function zobrazZpravu(text, jeChyba = false) {
@@ -560,7 +602,7 @@
       tbody.forEach((hrac, index) => {
         html += `<tr>
           <td>${index + 1}</td>
-          <td>${hrac.jmeno}</td>
+          <td>${hrac.jmeno }</td>
           <td>${hrac.vyhry}</td>
           <td>${hrac.prohry}</td>
           <td>${hrac.body}</td>
@@ -578,6 +620,61 @@
     function zpet() {
       document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
     }
+    //-------------------------------------------------------------------------------------------------------------------------
+        // Funkce pro získání hráčů z localStorage
+    function getHraceFromLocalStorage() {
+      return JSON.parse(localStorage.getItem('hraci') || '[]');
+    }
+
+    // Funkce pro výpočet odehraných zápasů a zbývajících zápasů
+    function spocitejZasluhy(hraci, skupinaId) {
+      const zapasy = JSON.parse(localStorage.getItem('zapasy') || '[]');
+      const hracStatistiky = {};
+
+      // Filtruj hráče podle skupiny
+      const hraciSkupina = hraci.filter(hrac => hrac.skupina === skupinaId);
+      console.log(hraciSkupina);
+      
+      // Spočítání zápasů pro každýho hráče ve skupině
+      hraciSkupina.forEach(hrac => {
+        const odehrane = zapasy.filter(z => z.skupina === skupinaId && (z.h1 === hrac.jmeno || z.h2 === hrac.jmeno)).length;
+        console.log(hrac.jmeno);
+        const celkem = hraciSkupina.length - 1;
+        hracStatistiky[hrac.prijmeni + ' ' + hrac.jmeno] = {
+          odehral: odehrane,
+          zbyva: Math.max(0, celkem - odehrane)
+        };
+      });
+
+      return hracStatistiky;
+    }
+
+    // Funkce pro zobrazení statistik
+    function zobrazStatistiky(hraci, skupinaId, tabulkaId) {
+      const statistiky = spocitejZasluhy(hraci, skupinaId);
+      const tbody = document.querySelector(`#${tabulkaId} tbody`);
+      tbody.innerHTML = ''; // Smaže předchozí obsah
+
+      // Vytvoření řádku pro každého hráče
+      Object.entries(statistiky).forEach(([hrac, stat]) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${hrac}</td>
+          <td>${stat.odehral}</td>
+          <td>${stat.zbyva}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Spusť po načtení
+    window.onload = () => {
+      const hraci = getHraceFromLocalStorage();  // Načti hráče z localStorage
+      zobrazStatistiky(hraci, 'Děti', 'statistikyDeti');
+      zobrazStatistiky(hraci, 'Dospělí', 'statistikyDospelem');
+      naplnCombo('Děti');
+      naplnCombo('Dospělí');
+    };
 
   </script>
 

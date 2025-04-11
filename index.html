@@ -9,6 +9,7 @@
     html,
     body {
       height: 100%;
+      width: 100%;
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
 
@@ -118,20 +119,6 @@
       background-color: #ef5350;
     }
 
-   /* .vysledky {
-      background-color: rgb(120, 172, 202);
-      /* nebo jiná barva, např. #f0f0f0 */
-     /* opacity: 0.8;
-      /* zajistí, že nebude průhledná */
-   /*   font-size: 28px;
-    }
-
-    .vysledky th,
-    .vysledky td {
-      background-color: inherit;
-      /* aby buňky měly stejné pozadí jako celá tabulka */
-   /*}*/
-
     .turnaj-tabulka {
       width: 100%;
       border-collapse: collapse;
@@ -167,8 +154,8 @@
 
   <div class="menu">
     <button class="btn" onclick="zobraz('registrace')">Registrace hráče</button>
-    <button class="btn" onclick="zobraz('skupinaA')">Zápas - Skupina skupinaA</button>
-    <button class="btn" onclick="zobraz('skupinaB')">Zápas - Skupina skupinaB</button>
+    <button class="btn" onclick="zobraz('skupinaA')">Zápas - Dospělí</button>
+    <button class="btn" onclick="zobraz('skupinaB')">Zápas - Děti</button>
   </div>
   
   <!-- Sekce: Registrace -->
@@ -195,7 +182,7 @@
 
   <!-- Sekce: Zápasy -->
   <div id="skupinaA" class="section">
-    <h2>Zápas - Skupina skupinaA</h2>
+    <h2>Zápas - Dospělí</h2>
     <div class="form-group">
       <label>Hráč 1:</label>
       <select id="hrac1A"></select>
@@ -213,7 +200,7 @@
   </div>
 
   <div id="skupinaB" class="section">
-    <h2>Zápas - Skupina skupinaB</h2>
+    <h2>Zápas - Děti</h2>
     <div class="form-group">
       <label>Hráč 1:</label>
       <select id="hrac1B"></select>

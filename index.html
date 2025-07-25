@@ -204,6 +204,56 @@
       background-color: #ddd;
 
     }
+
+
+    .keyboard {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 40vh;
+  background-color: #222;
+  color: white;
+  display: none;
+  flex-direction: column;
+  padding: 10px;
+  box-sizing: border-box;
+  z-index: 1000;
+}
+
+.keyboard.visible {
+  display: flex;
+}
+
+.keyboard-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(4vw, 1fr));
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.keyboard button {
+  padding: 1.5vh;
+  font-size: 2vh;
+  border: none;
+  background-color: #444;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.keyboard button:active {
+  background-color: #666;
+}
+
+.wide {
+  grid-column: span 2;
+}
+.extra-wide {
+  grid-column: span 3;
+}
+
   </style>
 
   </style>
@@ -500,16 +550,6 @@
     }
 
 
-    
-  
-    // Při načtení stránky naplníme comboboxy
-    window.onload = () => {
-      naplnCombo('Dospělí');
-      naplnCombo('Děti');
-    };
-  </script>
-  
-  <script>
     function toggleVysledky() {
       const vysledkyDiv = document.getElementById("vysledky");
       const tlacitko = document.getElementById("btnVysledky");
@@ -677,6 +717,120 @@
     };
 
   </script>
+
+  <div id="keyboard" class="keyboard">
+  <div class="keyboard-row" id="row1"></div>
+  <div class="keyboard-row" id="row2"></div>
+  <div class="keyboard-row" id="row3"></div>
+  <div class="keyboard-row" id="row4"></div>
+  <div class="keyboard-row" id="row5"></div>
+</div>
+
+<script>
+let activeInput = null;
+let isShift = false;
+let accentBuffer = '';
+
+const accentMap = {
+  'ˇ': {
+    'c': 'č', 'C': 'Č', 'd': 'ď', 'D': 'Ď', 'e': 'ě', 'E': 'Ě',
+    'n': 'ň', 'N': 'Ň', 'r': 'ř', 'R': 'Ř', 's': 'š', 'S': 'Š',
+    't': 'ť', 'T': 'Ť', 'z': 'ž', 'Z': 'Ž'
+  },
+  '´': {
+    'a': 'á', 'A': 'Á', 'e': 'é', 'E': 'É', 'i': 'í', 'I': 'Í',
+    'o': 'ó', 'O': 'Ó', 'u': 'ú', 'U': 'Ú', 'y': 'ý', 'Y': 'Ý'
+  }
+};
+
+const keys = {
+  row1: [[';', '°'], ['+', '1'], ['ě', '2'], ['š', '3'], ['č', '4'], ['ř', '5'], ['ž', '6'], ['ý', '7'], ['á', '8'], ['í', '9'], ['é', '0'], ['=', '%'], ['´', 'ˇ'], ['BCK', 'BCK']],
+  row2: [['q','Q'], ['w','W'], ['e','E'], ['r','R'], ['t','T'], ['z','Z'], ['u','U'], ['i','I'], ['o','O'], ['p','P'], ['ú','/'], [')','(']],
+  row3: [['a','A'], ['s','S'], ['d','D'], ['f','F'], ['g','G'], ['h','H'], ['j','J'], ['k','K'], ['l','L'], ['ů','"'], ['§','!'], ['¨','"']],
+  row4: [['\\','|'], ['y','Y'], ['x','X'], ['c','C'], ['v','V'], ['b','B'], ['n','N'], ['m','M'], [',','?'], ['.',':'], ['-','_']],
+  row5: [['SHIFT','SHIFT'], [' ',' '], ['SHIFT','SHIFT'], ['ZAVRIT','ZAVRIT']]
+};
+
+function createRow(rowElement, keyDefs) {
+  keyDefs.forEach(([normal, shift]) => {
+    const btn = document.createElement("button");
+    btn.textContent = isShift ? shift : normal;
+    if (normal === ' ' || normal === 'SHIFT' || normal === 'ZAVRIT') btn.classList.add('wide');
+    if (normal === ' ') btn.classList.add('extra-wide');
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      handleKeyPress(normal, shift);
+    };
+    rowElement.appendChild(btn);
+  });
+}
+
+function handleKeyPress(normal, shift) {
+  const char = isShift ? shift : normal;
+  switch (normal) {
+    case 'BCK':
+      if (activeInput) activeInput.value = activeInput.value.slice(0, -1);
+      break;
+    case 'SHIFT':
+      isShift = !isShift;
+      refreshKeyboard();
+      break;
+    case 'ZAVRIT':
+      keyboard.classList.remove("visible");
+      break;
+    case ' ':
+      if (activeInput) activeInput.value += ' ';
+      break;
+    default:
+      if (!activeInput) return;
+      if (accentBuffer && accentMap[accentBuffer] && accentMap[accentBuffer][char]) {
+        activeInput.value += accentMap[accentBuffer][char];
+        accentBuffer = '';
+      } else if (accentMap[char]) {
+        accentBuffer = char;
+      } else {
+        activeInput.value += char;
+        accentBuffer = '';
+      }
+      if (isShift && normal !== 'SHIFT') {
+        isShift = false;
+        refreshKeyboard();
+      }
+  }
+}
+
+
+
+function refreshKeyboard() {
+  const keys = keyboardType === 'number' ? keysNumber : keysText;
+  createRow(document.getElementById("row1"), keys.row1);
+  createRow(document.getElementById("row2"), keys.row2);
+  createRow(document.getElementById("row3"), keys.row3);
+  createRow(document.getElementById("row4"), keys.row4);
+  createRow(document.getElementById("row5"), keys.row5);
+}
+
+const keyboard = document.getElementById("keyboard");
+
+document.querySelectorAll('input').forEach(input => {
+  input.addEventListener("focus", (e) => {
+    activeInput = e.target;
+    keyboardType = input.type === 'number' ? 'number' : 'text';
+    keyboard.classList.add("visible");
+    refreshKeyboard();
+  });
+});
+
+document.addEventListener("click", (e) => {
+  if (!keyboard.contains(e.target) && !(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+    keyboard.classList.remove("visible");
+    activeInput = null;
+  }
+});
+
+
+refreshKeyboard();
+</script>
 
 </body>
 

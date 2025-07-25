@@ -14,25 +14,23 @@
       overflow: hidden;
     }
 
-    #myInput {
-      font-size: 24px;
-      padding: 15px;
-      margin: 20px;
-      width: calc(100% - 40px);
-      box-sizing: border-box;
-    }
-
     .keyboard {
       position: fixed;
       bottom: 0;
       left: 0;
-      width: 100%;
+      width: 100vw;
+      height: 40vh;
       background-color: #222;
       color: white;
-      display: flex;
+      display: none;
       flex-direction: column;
       padding: 10px;
       box-sizing: border-box;
+      z-index: 1000;
+    }
+
+    .keyboard.visible {
+      display: flex;
     }
 
     .keyboard-row {
@@ -57,10 +55,6 @@
       background-color: #666;
     }
 
-    .hidden {
-      display: none;
-    }
-
     .wide {
       grid-column: span 2;
     }
@@ -71,9 +65,7 @@
 </head>
 <body>
 
-  <input type="text" id="myInput" placeholder="Klikni pro psaní" readonly>
-
-  <div id="keyboard" class="keyboard hidden">
+  <div id="keyboard" class="keyboard">
     <div class="keyboard-row" id="row1"></div>
     <div class="keyboard-row" id="row2"></div>
     <div class="keyboard-row" id="row3"></div>
@@ -82,9 +74,8 @@
   </div>
 
   <script>
-    const input = document.getElementById("myInput");
+    let activeInput = null;
     const keyboard = document.getElementById("keyboard");
-
     const row1 = document.getElementById("row1");
     const row2 = document.getElementById("row2");
     const row3 = document.getElementById("row3");
@@ -138,26 +129,27 @@
 
       switch (normal) {
         case 'BCK':
-          input.value = input.value.slice(0, -1);
+          if (activeInput) activeInput.value = activeInput.value.slice(0, -1);
           break;
         case 'SHIFT':
           isShift = !isShift;
           refreshKeyboard();
           break;
         case 'ZAVRIT':
-          keyboard.classList.add('hidden');
+          keyboard.classList.remove('visible');
           break;
         case ' ':
-          input.value += ' ';
+          if (activeInput) activeInput.value += ' ';
           break;
         default:
+          if (!activeInput) return;
           if (accentBuffer && accentMap[accentBuffer] && accentMap[accentBuffer][char]) {
-            input.value += accentMap[accentBuffer][char];
+            activeInput.value += accentMap[accentBuffer][char];
             accentBuffer = '';
           } else if (accentMap[char]) {
             accentBuffer = char;
           } else {
-            input.value += char;
+            activeInput.value += char;
             accentBuffer = '';
           }
           if (isShift && normal !== 'SHIFT') {
@@ -176,15 +168,17 @@
       createRow(row5, keys.row5);
     }
 
-    input.addEventListener("click", (e) => {
-      e.stopPropagation();
-      input.focus();
-      keyboard.classList.remove("hidden");
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+      input.addEventListener("focus", (e) => {
+        activeInput = e.target;
+        keyboard.classList.add("visible");
+      });
     });
 
     document.addEventListener("click", (e) => {
-      if (!keyboard.contains(e.target) && e.target !== input) {
-        keyboard.classList.add("hidden");
+      if (!keyboard.contains(e.target)) {
+        keyboard.classList.remove("visible");
+        activeInput = null;
       }
     });
 

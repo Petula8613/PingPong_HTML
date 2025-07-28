@@ -15,11 +15,11 @@ const keysText = {
 };
 
 const keysNumber = {
-  row1: [['7'], ['8'], ['9']],
-  row2: [['4'], ['5'], ['6']],
-  row3: [['1'], ['2'], ['3']],
-  row4: [['←'], ['0'], ['ZAVRIT']],
-  row5: []
+  row1: [['9'],['10'], ['11']], 
+  row2: [['6'],['7'], ['8']], 
+  row3: [['3'],['4'], ['4']],
+  row4: [['0'],['1'], ['2']], 
+  row5: [['←'], ['ZAVRIT']]
 };
 
 function createRow(rowEl, defs) {
@@ -34,6 +34,20 @@ function createRow(rowEl, defs) {
     rowEl.appendChild(btn);
   });
 }
+
+/*function createRow(rowEl, defs) {
+  if (!Array.isArray(defs)) return;
+  rowEl.innerHTML = '';
+  defs.forEach(key => {
+    const [normal, shift] = key.length === 2 ? key : [key[0], key[0]];
+    const btn = document.createElement('button');
+    btn.textContent = isShift ? shift : normal;
+    if (normal === ' ' || normal === 'SHIFT' || normal === 'ZAVRIT') btn.classList.add('wide');
+    if (normal === ' ') btn.classList.add('extra-wide');
+    btn.onclick = e => { e.stopPropagation(); handleKey(normal, shift); };
+    rowEl.appendChild(btn);
+  });
+}*/
 
 function handleKey(n, s) {
   const ch = isShift ? s : n;

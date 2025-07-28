@@ -44,11 +44,20 @@ function ulozZapas(g) {
         s2 = document.getElementById('skore2'+g).value,
         s3 = document.getElementById('skore3'+g).value,
         s4 = document.getElementById('skore4'+g).value;
-  if(!h1||!h2||h1===h2){ alert('Chybně zvolení hráči'); return; }
-  if(s1===''||s2===''||s3===''||s4===''){ alert('Zadejte všechna skóre'); return; }
+  if(!h1||!h2||h1===h2){ showError('Chybně zvolení hráči'); return; }
+  if(s1===''||s2===''||s3===''||s4===''){ showError('Zadejte všechna skóre'); return; }
+  //if(s1>11||s2>11||s3>12||s4>11){ showError('Maximální skóre může být 11'); return; }
+  if(s1==s2||s3==s4){ showError('Špatně zadané skóre \n Stejné skóre nemůže být!!!'); return; }
   const arr = getZapasy();
   arr.push({ h1,h2,s1,s2,s3,s4,skupina:g });
+  
   saveZapasy(arr);
+  document.getElementById('hrac1'+g).value = '';
+  document.getElementById('hrac2'+g).value = '';
+  document.getElementById('skore1'+g).value = '';
+  document.getElementById('skore2'+g).value = '';
+  document.getElementById('skore3'+g).value = '';
+  document.getElementById('skore4'+g).value = '';
   showPopup('Zápas uložen!');
   renderStats();
 }
@@ -56,6 +65,14 @@ function ulozZapas(g) {
 // Zobraz popup
 function showPopup(msg){
   const pop = document.getElementById('zpravaUlozeno');
+  pop.textContent = msg;
+  pop.style.display = 'block';
+  setTimeout(()=>pop.style.display='none',2000);
+}
+
+// Zobraz popup
+function showError(msg){
+  const pop = document.getElementById('zpravaError');
   pop.textContent = msg;
   pop.style.display = 'block';
   setTimeout(()=>pop.style.display='none',2000);

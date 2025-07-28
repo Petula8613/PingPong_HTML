@@ -11,7 +11,7 @@ function ulozHrace() {
   const j = document.getElementById('jmeno').value.trim(),
         p = document.getElementById('prijmeni').value.trim(),
         s = document.getElementById('skupina').value;
-  if (!j || !p) { alert('Vyplňte jméno i příjmení'); return; }
+  if (!j || !p) { showError('Vyplňte jméno i příjmení'); return; }
   const arr = getHrace();
   arr.push({ jmeno: j, prijmeni: p, skupina: s });
   saveHrace(arr);
